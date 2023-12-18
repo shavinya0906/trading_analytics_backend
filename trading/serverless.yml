@@ -1,0 +1,32 @@
+service: tradeanalytics-backend
+
+useDotenv: true
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  environment: 
+    NODE_ENV: ${env:NODE_ENV}
+    SERVER_HOST: ${env:SERVER_HOST}
+    SERVER_PORT: ${env:SERVER_PORT}
+
+    AWS_AUTH_BACKEND_SECRET_KEY: ${env:AWS_AUTH_BACKEND_SECRET_KEY}
+    AWS_AUTH_BACKEND_ACCESS_KEY: ${env:AWS_AUTH_BACKEND_ACCESS_KEY}
+    AWS_AUTH_BACKEND_REGION: ${env:AWS_AUTH_BACKEND_REGION}
+
+    JWT_PASSWORD: ${env:JWT_PASSWORD}
+    JWT_EXPIRY_TIME: ${env:JWT_EXPIRY_TIME}
+
+functions:
+  hello:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http: 
+          method: ANY
+          path: '{proxy+}'

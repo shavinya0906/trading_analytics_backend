@@ -1,0 +1,34 @@
+service: auth-trade-analytics-backend
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+package:
+  exclude:
+    - .git/**
+    - src/**
+    - test/**
+    - e2e/**
+    - nodemon.json
+    - README.md
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: ap-south-1
+  timeout: 60
+  profile: default
+  memorySize: 256 # optional, in MB, default is 1024
+  # stage: dev
+
+functions:
+  main:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: "{proxy+}"

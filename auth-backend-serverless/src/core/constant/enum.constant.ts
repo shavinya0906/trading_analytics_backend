@@ -1,0 +1,4 @@
+export enum GROUP_PRIVACY {
+  PRIVATE = 'PRIVATE',
+  PUBLIC = 'PUBLIC',
+}
