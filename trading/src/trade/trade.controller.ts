@@ -16,6 +16,7 @@ import { ClientAuthGuard } from '../core/helper/auth.guard';
 import { CurrentUser } from '../core/decorator/user.decorator';
 import { CreateTradeDTO, UpdateTradeDTO } from 'src/core/dto';
 import { GetByIdDTO } from 'src/core/dto/get-by-id.dto';
+import { MissedTradeService } from './missedTradeLog.service';
 // import {
 //   CreateTradeAdvanceDTO,
 //   UpdateTradeAdvanceDTO,
@@ -24,7 +25,11 @@ import { GetByIdDTO } from 'src/core/dto/get-by-id.dto';
 @ApiTags('trade')
 @Controller('trade')
 export class TradeController {
-  constructor(private readonly tradeService: TradeService) {}
+  constructor(
+    private readonly tradeService: TradeService,
+    private readonly missedTradeService: MissedTradeService,
+  ) {}
+  // constructor(private readonly missedTradeService:MissedTradeService){}
 
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
@@ -32,8 +37,12 @@ export class TradeController {
   async createTrade(
     @Body(ValidationPipe) data: any,
     @CurrentUser() user: any,
+    @Query('filename') filename?: string,
   ): Promise<any> {
-    return await this.tradeService.createTrade(data, user);
+    if (filename == 'tradelog')
+      return await this.tradeService.createTrade(data, user);
+    else if (filename == 'tools')
+      return await this.missedTradeService.createMissedTrade(data, user);
   }
 
   @ApiBearerAuth()
@@ -43,8 +52,12 @@ export class TradeController {
     @Param() id,
     @Body() data: UpdateTradeDTO,
     @CurrentUser() user: any,
+    @Query('filename')filename? :string,
   ): Promise<any> {
-    return await this.tradeService.updateTrade(id.id, data, user);
+    if (filename == 'tradelog')
+      return await this.tradeService.updateTrade(id.id, data, user);
+    else if (filename == 'tools')
+      return await this.missedTradeService.updateMissedTrade(id.id, data, user);
   }
 
   @ApiBearerAuth()
@@ -53,8 +66,12 @@ export class TradeController {
   async deleteTrade(
     @Param() id: GetByIdDTO,
     @CurrentUser() user: any,
+    @Query('filename') filename?: string,
   ): Promise<any> {
-    return await this.tradeService.deleteTrade(id.id, user);
+    if (filename == 'tradelog')
+      return await this.tradeService.deleteTrade(id.id, user);
+    else if (filename == 'tools')
+      return await this.missedTradeService.deleteMissedTrade(id.id, user);
   }
 
   @ApiBearerAuth()
@@ -63,8 +80,12 @@ export class TradeController {
   async getAllTrade(
     @CurrentUser() user: any,
     @Query() queries: any,
-    ): Promise<any> { 
-    return await this.tradeService.getTrade(user, queries);
+    @Query('filename') filename?: string,
+  ): Promise<any> {
+    if (filename == 'tradelog')
+      return await this.tradeService.getTrade(user, queries);
+    else if (filename == 'tools')
+      return await this.missedTradeService.getMissedTrade(user, queries);
   }
 
   @ApiBearerAuth()
@@ -85,7 +106,7 @@ export class TradeController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ): Promise<any> {
-    return await this.tradeService.getTradeAvg(user,startDate,endDate);
+    return await this.tradeService.getTradeAvg(user, startDate, endDate);
   }
 
   // @ApiBearerAuth()
@@ -122,7 +143,7 @@ export class TradeController {
   // @ApiBearerAuth()
   // @UseGuards(ClientAuthGuard)
   // @Get('/advance')
-  // async getAllTradeAdvance(@CurrentUser() user: any): Promise<any> {    
+  // async getAllTradeAdvance(@CurrentUser() user: any): Promise<any> {
   //   return await this.tradeService.getTradeAdvance(user);
   // }
 
