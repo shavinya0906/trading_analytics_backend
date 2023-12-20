@@ -217,13 +217,16 @@ export class TradeService {
     }
   }
 
-  async getTradeAvg(user: any) {
+  async getTradeAvg(user: any, startDate?: string, endDate?: string) {
+
     try {
-      const tradeData = await this.tradeInstance
-        .scan()
-        .where('user_id')
-        .eq(user.id)
-        .exec();
+
+      let query = this.tradeInstance.scan().where('user_id').eq(user.id);
+      if (startDate && endDate) {
+        query = query.where('trade_date').between(startDate, endDate);
+      }
+
+      const tradeData = await query.exec();
 
       if (tradeData?.length > 0) {
         // Function to calculate Net PNL and Avg Return/Day
@@ -249,34 +252,37 @@ export class TradeService {
 
           for (const trade of trades) {
             if (trade.trade_karma === 'Satisfied') {
-              positiveSum += parseFloat(trade.points_captured);
+              positiveSum += 1;
             } else {
-              negativeSum += parseFloat(trade.points_captured);
+              negativeSum += 1;
             }
           }
 
-          const karmaFactor = positiveSum / Math.abs(negativeSum);
+          const karmaFactor = positiveSum / negativeSum;
 
-          return !Number.isNaN(karmaFactor) ? karmaFactor : 0;
+          return [!Number.isNaN(karmaFactor) ? karmaFactor : 0 ,positiveSum,negativeSum];
         }
 
         // Function to calculate Max DD
         function calculateMaxDD(trades: any[]) {
-          let maxDD = 0;
-          let currentDD = 0;
+          let cumulativePnl=[0];
+          let hightWaterMark=[0];
+          let drawDown=[0];
 
+          //Calculate cumulative Pnl
           for (const trade of trades) {
             const pnl = trade.trade_pnl;
-
-            if (pnl < 0) {
-              currentDD += pnl;
-              if (currentDD < maxDD) {
-                maxDD = currentDD;
-              }
-            } else {
-              currentDD = 0;
-            }
+            cumulativePnl.push(cumulativePnl[cumulativePnl.length-1]+pnl);
           }
+
+          //Calculate high water mark and drawdown
+          for (let i=1;i<cumulativePnl.length;i++){
+            hightWaterMark.push(Math.max(hightWaterMark[i-1],cumulativePnl[i]));
+            drawDown.push(cumulativePnl[i]-hightWaterMark[i]);
+          }
+
+          //Find the maximum drawdown
+          const maxDD=Math.max(...drawDown);
 
           return !Number.isNaN(maxDD) ? maxDD : 0;
         }
@@ -301,16 +307,16 @@ export class TradeService {
 
         // Function to calculate R:R Ratio
         function calculateRRRatio(trades: any[]) {
-          let totalRR = 0;
-
-          for (const trade of trades) {
-            totalRR +=
-              parseFloat(trade.trade_target) / parseFloat(trade.stop_loss);
+          if (trades.length === 0) {
+            return 0;
           }
-
-          const avgRRRatio = totalRR / trades.length;
-
-          return !Number.isNaN(avgRRRatio) ? avgRRRatio : 0;
+          const sum = trades.reduce((accumulator, trade) => {
+            const tradeRisk = trade.trade_risk;
+            const [a, b] = tradeRisk.split(' : ').map(Number);
+            return accumulator + a / b;
+          }, 0);
+          const average = sum / trades.length;
+          return !Number.isNaN(average) ? average : 0;
         }
 
         // Function to calculate Avg Winning and Losing Trade
@@ -332,13 +338,13 @@ export class TradeService {
             }
           }
 
-          // const avgWinningTrade = totalWinningTrade / winningCount;
-          // const avgLosingTrade = totalLosingTrade / losingCount;
+          const avgWinningTrade = totalWinningTrade / winningCount;
+          const avgLosingTrade = totalLosingTrade / losingCount;
 
           const percentageWinningTrades = (winningCount / trades.length) * 100;
           const percentageLosingTrades = (losingCount / trades.length) * 100;
 
-          return { percentageWinningTrades, percentageLosingTrades };
+          return { percentageWinningTrades, percentageLosingTrades,avgLosingTrade,avgWinningTrade };
         }
 
         function calculateEquityCurve(tradeData) {
@@ -404,7 +410,7 @@ export class TradeService {
         const maxDD = calculateMaxDD(tradeData);
         const winPercentage = calculateWinPercentage(tradeData);
         const avgRRRatio = calculateRRRatio(tradeData);
-        const { percentageWinningTrades, percentageLosingTrades } =
+        const { percentageWinningTrades, percentageLosingTrades,avgLosingTrade,avgWinningTrade } =
           calculateAvgWinningAndLosingTrade(tradeData);
         const transformedData = tradeData.map((trade) => ({
           trade_date: trade.trade_date,
@@ -418,8 +424,8 @@ export class TradeService {
           karmaFactor: karmaFactor,
           winPercentage: winPercentage,
           RRratio: avgRRRatio,
-          avgWinningTrade: percentageWinningTrades,
-          avgLosingTrade: percentageLosingTrades,
+          avgWinningTrade: avgWinningTrade,
+          avgLosingTrade: avgLosingTrade,
           maxDD: maxDD,
           dailyPnL: transformedData,
           strategies: strategyData,

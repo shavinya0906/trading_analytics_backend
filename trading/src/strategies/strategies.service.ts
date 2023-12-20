@@ -17,7 +17,8 @@ export class StrategiesService {
   async createStrategies(data: CreateStrategiesDTO, user: any) {
     try {
       return await this.strategiesInstance.create({
-        strategies_name: data.strategies_name,
+        // strategies_name: data.strategies_name,
+        ...data,
         user_id: user.id,
       });
     } catch (error) {
@@ -61,7 +62,7 @@ export class StrategiesService {
           message: 'No order found',
         };
       }
-      await this.strategiesInstance.delete(accountData.strategies_Id);
+      await this.strategiesInstance.delete(accountData.id);
       return {
         status: 200,
         message: 'order is deleted',

@@ -82,8 +82,10 @@ export class TradeController {
   @Get('/dashboard')
   async getTradeAvg(
     @CurrentUser() user: any,
-  ): Promise<any> {  
-    return await this.tradeService.getTradeAvg(user);
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ): Promise<any> {
+    return await this.tradeService.getTradeAvg(user,startDate,endDate);
   }
 
   // @ApiBearerAuth()

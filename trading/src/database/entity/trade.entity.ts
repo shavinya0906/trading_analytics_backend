@@ -14,7 +14,7 @@ export class TradeEntity extends Item {
   trade_charges: number;
   trading_account: string;
   stop_loss: number;
-  trade_target: string;
+  trade_target: number;
   id: string;
   trade_conviction: string;
   strategy_used: string;

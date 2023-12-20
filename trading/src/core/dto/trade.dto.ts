@@ -79,7 +79,7 @@ export class CreateTradeDTO {
   stop_loss: number;
 
   @IsString()
-  trade_target: string;
+  trade_target: number;
 
   @ApiProperty({
     required: false,
@@ -254,7 +254,7 @@ export class UpdateTradeDTO {
   })
   @IsOptional()
   @IsString()
-  trade_target: string;
+  trade_target: number;
 
   @ApiProperty({
     required: false,

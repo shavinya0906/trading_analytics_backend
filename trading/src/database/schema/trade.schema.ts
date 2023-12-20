@@ -3,12 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const dynamicColumnSchema = new dynamoose.Schema({
   key: {
-    type: String
+    type: String,
   },
   value: {
-    type: String
-  }
-})
+    type: String,
+  },
+});
 
 export const TradeSchema = new dynamoose.Schema({
   id: {
@@ -18,15 +18,15 @@ export const TradeSchema = new dynamoose.Schema({
   },
   asset_class: {
     type: String,
-    required: true,
+    // required: true,
   },
   position_size: {
     type: Number,
-    required: true,
+    // required: true,
   },
   points_captured: {
     type: Number,
-    required: true,
+    // required: true,
   },
   trade_pnl: {
     type: Number,
@@ -42,11 +42,11 @@ export const TradeSchema = new dynamoose.Schema({
   },
   trade_remark: {
     type: String,
-    required: true,
+    // required: true,
   },
   trade_karma: {
     type: String,
-    required: true,
+    // required: true,
   },
   trade_date: {
     type: String,
@@ -54,62 +54,62 @@ export const TradeSchema = new dynamoose.Schema({
   },
   holding_trade_type: {
     type: String,
-    required: true,
+    // required: true,
   },
   trade_charges: {
     type: Number,
-    required: true,
+    // required: true,
   },
   trading_account: {
     type: String,
-    required: true,
+    // required: true,
   },
   stop_loss: {
     type: Number,
-    required: true,
+    // required: true,
   },
   trade_target: {
-    type: String,
-    required: true,
+    type: Number,
+    // required: true,
   },
   trade_conviction: {
-    required: true,
+    // required: true,
     type: String,
   },
   strategy_used: {
-    required: true,
+    // required: true,
     type: String,
   },
   trade_risk: {
-    required: true,
+    // required: true,
     type: String,
   },
   reason_for_trade: {
-    required: true,
+    // required: true,
     type: String,
   },
   percentage_of_account_risked: {
-    required: true,
+    // required: true,
     type: Number,
   },
   image: {
-    required: true,
+    // required: true,
     type: String,
   },
   trade_slippage: {
-    required: true,
+    // required: true,
     type: Number,
   },
   trade_penalties: {
-    required: true,
+    // required: true,
     type: Number,
   },
   net_roi: {
-    required: true,
+    // required: true,
     type: Number,
   },
   trade_customizable: {
-    required: true,
+    // required: true,
     type: String,
   },
   opening_balance: {
@@ -117,7 +117,7 @@ export const TradeSchema = new dynamoose.Schema({
     type: Number,
   },
   trade_tags: {
-    required: true,
+    // required: true,
     type: String,
   },
   user_id: {
@@ -125,13 +125,13 @@ export const TradeSchema = new dynamoose.Schema({
     type: String,
   },
   comment: {
-    required: true,
+    // required: true,
     type: String,
   },
   dynamicColumn: {
     required: false,
     type: Array,
-    schema: [dynamicColumnSchema]
+    schema: [dynamicColumnSchema],
   },
   createdAt: {
     type: Date,

@@ -10,6 +10,7 @@ import { NewsModule } from './news/news.module';
 import { UserColumnModule } from './user_column/user_column.module';
 import { TradingAccountModule } from './trading_account/trading_account.module';
 import { StrategiesModule } from './strategies/strategies.module';
+import { SessionsModule } from './sessions/sessions.module';
 import { ExcelExportModule } from './excel_export/excel_export.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { ExcelExportModule } from './excel_export/excel_export.module';
     UserColumnModule,
     TradingAccountModule,
     StrategiesModule,
+    SessionsModule,
     ExcelExportModule,
   ],
 })

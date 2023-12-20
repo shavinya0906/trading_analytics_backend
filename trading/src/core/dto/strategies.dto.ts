@@ -7,10 +7,9 @@ export class CreateStrategiesDTO {
   })
   @IsString()
   strategies_name: string;
-
   @ApiProperty({
-    required: true,
+    // required: true,
   })
   @IsString()
-  user_id: string;
+  strategies_desc: string;
 }
