@@ -39,10 +39,19 @@ export class TradeController {
     @CurrentUser() user: any,
     @Query('filename') filename?: string,
   ): Promise<any> {
-    if (filename == 'tradelog')
-      return await this.tradeService.createTrade(data, user);
-    else if (filename == 'tools')
+    if (filename == 'tools')
       return await this.missedTradeService.createMissedTrade(data, user);
+    else return await this.tradeService.createTrade(data, user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(ClientAuthGuard)
+  @Post('/createTrades')
+  async createTrades(
+    @Body(ValidationPipe) dataList: CreateTradeDTO[],
+    @CurrentUser() user: any,
+  ): Promise<any> {
+    return await this.tradeService.createTrades(dataList, user);
   }
 
   @ApiBearerAuth()
@@ -52,12 +61,11 @@ export class TradeController {
     @Param() id,
     @Body() data: UpdateTradeDTO,
     @CurrentUser() user: any,
-    @Query('filename')filename? :string,
+    @Query('filename') filename?: string,
   ): Promise<any> {
-    if (filename == 'tradelog')
-      return await this.tradeService.updateTrade(id.id, data, user);
-    else if (filename == 'tools')
+    if (filename == 'tools')
       return await this.missedTradeService.updateMissedTrade(id.id, data, user);
+    else return await this.tradeService.updateTrade(id.id, data, user);
   }
 
   @ApiBearerAuth()
@@ -68,10 +76,9 @@ export class TradeController {
     @CurrentUser() user: any,
     @Query('filename') filename?: string,
   ): Promise<any> {
-    if (filename == 'tradelog')
-      return await this.tradeService.deleteTrade(id.id, user);
-    else if (filename == 'tools')
+    if (filename == 'tools')
       return await this.missedTradeService.deleteMissedTrade(id.id, user);
+    else return await this.tradeService.deleteTrade(id.id, user);
   }
 
   @ApiBearerAuth()
@@ -82,10 +89,9 @@ export class TradeController {
     @Query() queries: any,
     @Query('filename') filename?: string,
   ): Promise<any> {
-    if (filename == 'tradelog')
-      return await this.tradeService.getTrade(user, queries);
-    else if (filename == 'tools')
+    if (filename == 'tools')
       return await this.missedTradeService.getMissedTrade(user, queries);
+    else return await this.tradeService.getTrade(user, queries);
   }
 
   @ApiBearerAuth()

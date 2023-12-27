@@ -21,6 +21,74 @@ export class TradeService {
     //   TradeAdvanceSchema,
     // );
   }
+
+  async createTrades(dataList: CreateTradeDTO[], user: any) {
+    try {
+      const allTrades = await this.tradeInstance.scan().exec();
+      const sortedTrades = allTrades.sort((a, b) =>
+        a.trade_date > b.trade_date ? -1 : 1,
+      );
+      let opening_balance = dataList[0].opening_balance;
+  
+      if (sortedTrades.length > 0) {
+        opening_balance =
+          dataList[0].trade_pnl + sortedTrades[0].opening_balance;
+      }
+  
+      const insertedTrades = [];
+  
+      for (const data of dataList) {
+        const trade = await this.tradeInstance.create({
+          asset_class: data.asset_class,
+          position_size: data.position_size,
+          points_captured: data.points_captured,
+          trade_pnl: data.trade_pnl,
+          position: data.position,
+          buy_sell: data.buy_sell,
+          trade_remark: data.trade_remark,
+          trade_karma: data.trade_karma,
+          trade_date: data.trade_date,
+          holding_trade_type: data.holding_trade_type,
+          trade_charges: data.trade_charges || 0,
+          trading_account: data.trading_account,
+          stop_loss: data.stop_loss,
+          trade_target: data.trade_target,
+          user_id: user.id,
+          trade_conviction: data.trade_conviction,
+          strategy_used: data.strategy_used,
+          trade_risk: data.trade_risk,
+          reason_for_trade: data.reason_for_trade,
+          percentage_of_account_risked:
+            data.percentage_of_account_risked || 0,
+          image: data.image,
+          trade_slippage: data.trade_slippage,
+          trade_penalties: data.trade_penalties,
+          net_roi: data.net_roi,
+          trade_customizable: data.trade_customizable,
+          opening_balance: opening_balance,
+          trade_tags: data.trade_tags,
+          comment: data.comment,
+          dynamicColumn: [],
+        });
+  
+        if (trade.id || data.dynamicColumn.length !== 0) {
+          const tradeData = await this.tradeInstance.get(trade.id);
+          const existingDynamicColumn = data.dynamicColumn || [];
+          tradeData.dynamicColumn = existingDynamicColumn;
+          await tradeData.save();
+          insertedTrades.push(tradeData);
+        } else {
+          insertedTrades.push(trade);
+        }
+      }
+  
+      return insertedTrades;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  
   async createTrade(data: CreateTradeDTO, user: any) {
     try {
       const allTrades = await this.tradeInstance.scan().exec();
@@ -217,6 +285,23 @@ export class TradeService {
     }
   }
 
+  sortDataBy = (data:any[]) => {
+    let sortedData;
+    const arrayForSort = [...data];
+    sortedData = arrayForSort.sort((a, b) => {
+      let x = a?.trade_date;
+      let y = b?.trade_date;
+      if (x > y) {
+        return 1;
+      }
+      if (x < y) {
+        return -1;
+      }
+      return 0;
+    });
+    return sortedData;
+  };
+
   async getTradeAvg(user: any, startDate?: string, endDate?: string) {
 
     try {
@@ -226,7 +311,8 @@ export class TradeService {
         query = query.where('trade_date').between(startDate, endDate);
       }
 
-      const tradeData = await query.exec();
+      let tradeData = await query.exec();
+      tradeData = this.sortDataBy(tradeData);
 
       if (tradeData?.length > 0) {
         // Function to calculate Net PNL and Avg Return/Day
@@ -369,6 +455,23 @@ export class TradeService {
 
           return equityCurveData;
         }
+
+        function calculateTradeCharges(tradeData){
+          let totalTradeCharges=0;
+          tradeData.forEach((trade)=>{
+            totalTradeCharges+=trade.trade_charges;
+          });
+          return totalTradeCharges;
+        }
+
+        function calculateTradePenalties(tradeData){
+          let totalTradePenalties=0;
+          tradeData.forEach((trade)=>{
+            totalTradePenalties+=trade.trade_penalties;
+          });
+          return totalTradePenalties;
+        }
+
         const uniqueMonths = new Set();
         const uniqueStrategies = new Set();
         tradeData.forEach((trade) => {
@@ -417,6 +520,8 @@ export class TradeService {
           trade_pnl: trade.trade_pnl,
         }));
         const equityCurveData = calculateEquityCurve(tradeData);
+        const totalTradeCharges=calculateTradeCharges(tradeData);
+        const totalTradePenalties=calculateTradePenalties(tradeData);
 
         const data = {
           netPNL: netPNL,
@@ -430,6 +535,11 @@ export class TradeService {
           dailyPnL: transformedData,
           strategies: strategyData,
           equityCurveData: equityCurveData,
+          startDate:tradeData[0].trade_date,
+          endDate:tradeData[tradeData.length-1].trade_date,
+          totalTradeCharges:totalTradeCharges,
+          openingBalance:tradeData[0].opening_balance,
+          totalTradePenalties:totalTradePenalties,
         };
         return data;
       }

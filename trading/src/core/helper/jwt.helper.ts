@@ -1,7 +1,6 @@
 import jwtWebToken from 'jsonwebtoken';
 
 export function generateToken(data: any): string {
-  console.log('RUNNER');
   return jwtWebToken.sign({ ...data }, process.env.JWT_PASSWORD, {
     expiresIn: process.env.JWT_EXPIRY_TIME,
   });

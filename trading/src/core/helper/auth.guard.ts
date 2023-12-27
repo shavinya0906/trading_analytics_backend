@@ -25,7 +25,6 @@ export class ClientAuthGuard implements CanActivate {
       request.userId = decode;
       return true;
     } catch (e) {
-      console.log('Err guard -->', e);
       return false;
     }
   }
