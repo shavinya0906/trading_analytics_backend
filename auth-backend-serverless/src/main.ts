@@ -20,9 +20,6 @@ function configureSwagger(app): void {
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
   const configService = app.get<ConfigService>(ConfigService);
-  console.log(configService.get('aws_access_key'));
-  console.log(configService.get('aws_secret_key'));
-  console.log(configService.get('aws_region'));
   const ddb = new dynamoose.aws.ddb.DynamoDB({
     credentials: {
       accessKeyId: configService.get('aws_access_key'),

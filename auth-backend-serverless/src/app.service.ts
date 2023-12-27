@@ -17,7 +17,6 @@ export class AppService {
   }
   async signUp(createUserDto: CreateUserDTO) {
     try {
-      console.log('DATA', createUserDto);
       return await this.userInstance.create({
         first_name: createUserDto.first_name,
         last_name: createUserDto.last_name,

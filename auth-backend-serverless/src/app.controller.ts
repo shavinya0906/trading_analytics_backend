@@ -14,7 +14,6 @@ export class AppController {
 
   @Post('/user/signup')
   async addUser(@Body() data: CreateUserDTO): Promise<UserEntity> {
-    console.log(data);
     return await this.appService.signUp(data);
   }
 
