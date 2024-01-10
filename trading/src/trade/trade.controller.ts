@@ -87,11 +87,13 @@ export class TradeController {
   async getAllTrade(
     @CurrentUser() user: any,
     @Query() queries: any,
-    @Query('filename') filename?: string,
+    // @Query('filename') filename?: string,
   ): Promise<any> {
-    if (filename == 'tools')
+    if (queries.filename&&queries.filename == 'tools')
       return await this.missedTradeService.getMissedTrade(user, queries);
-    else return await this.tradeService.getTrade(user, queries);
+    else {
+      return await this.tradeService.getTrade(user, queries);
+    }
   }
 
   @ApiBearerAuth()
@@ -114,6 +116,30 @@ export class TradeController {
   ): Promise<any> {
     return await this.tradeService.getTradeAvg(user, startDate, endDate);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(ClientAuthGuard)
+  @Get('/trade-analytics')
+  async getTradeAnalytics(
+    @CurrentUser() user: any,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ): Promise<any> {
+    return await this.tradeService.getTradeAnalytics(user, startDate, endDate);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(ClientAuthGuard)
+  @Get('/get-advanced-graph')
+  async getAdvancedGraph(
+    @CurrentUser() user:any,
+    @Query('xAxis') xAxis: string,
+    @Query('yAxis') yAxis:string,
+  ):Promise<any>{
+    console.log(xAxis,yAxis);
+    return await this.tradeService.getAdvancedGraph(user,xAxis,yAxis);
+  }
+
 
   // @ApiBearerAuth()
   // @UseGuards(ClientAuthGuard)

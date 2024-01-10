@@ -25,7 +25,7 @@ export class UserColumnService {
         user_id: user.id,
         column_name: data?.column_name,
       });
-      const column_id = columnData?.column_id;
+      const column_id = columnData?.id;
       const tradeLogData = await this.tradeInstance
         .scan('user_id')
         .eq(user.id)
