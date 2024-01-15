@@ -26,9 +26,9 @@ export class SessionsService {
     }
   }
 
-  async getsessions() {
+  async getsessions(user:any) {
     try {
-      return await this.sessionsInstance.scan().exec();
+      return await this.sessionsInstance.scan().where('user_id').eq(user.id).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

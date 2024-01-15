@@ -40,10 +40,7 @@ export class TradeController {
   @UseGuards(ClientAuthGuard)
   @Get('/get')
   async getTradebook(@CurrentUser() user: any): Promise<any> {
-    console.log(user);
-    // Check if a file is uploaded
-    // Pass the file to the service for processing
-    return await this.tradebookService.getExistingFileURL();
+    return await this.tradebookService.getExistingFileURL(user);
   }
 }
 

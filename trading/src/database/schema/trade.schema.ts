@@ -137,4 +137,36 @@ export const TradeSchema = new dynamoose.Schema({
     type: Date,
     default: () => new Date(),
   },
+  emotion_influence: {
+    type: String,
+    required: false,
+  },
+  follow_plan: {
+    type: String,
+    required: false,
+  },
+  confidence_on_decisions: {
+    type: String,
+    required: false,
+  },
+  experience_regret: {
+    type: String,
+    required: false,
+  },
+  take_unnecessary_risks: {
+    type: String,
+    required: false,
+  },
+  feel_anxious_or_stressed: {
+    type: String,
+    required: false,
+  },
+  attached_or_averse_to_stocks: {
+    type: String,
+    required: false,
+  },
+  ideas_for_future_improvements: {
+    type: String,
+    required: false,
+  },
 });

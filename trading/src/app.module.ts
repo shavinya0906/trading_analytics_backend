@@ -13,6 +13,8 @@ import { StrategiesModule } from './strategies/strategies.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { ExcelExportModule } from './excel_export/excel_export.module';
 import { TradeBookModule } from './tradebook/tradebook.module';
+import { MantrasModule } from './mantras/mantras.module';
+import { MonthlyQuestionnaireModule } from './monthly-questionnaire/montly.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { TradeBookModule } from './tradebook/tradebook.module';
     SessionsModule,
     ExcelExportModule,
     TradeBookModule,
+    MantrasModule,
+    MonthlyQuestionnaireModule,
   ],
 })
 export class AppModule {}

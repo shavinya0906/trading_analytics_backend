@@ -14,13 +14,17 @@ import { CreateTradeDTO, UpdateTradeDTO } from 'src/core/dto';
 export class TradeService {
   private tradeInstance: Model<TradeEntity>;
   // private tradeAdvanceInstance: Model<TradeAdvanceEntity>;
+  
   constructor() {
     this.tradeInstance = dynamoose.model<TradeEntity>('trade', TradeSchema);
+    
     // this.tradeAdvanceInstance = dynamoose.model<TradeAdvanceEntity>(
     //   'trade_advance',
     //   TradeAdvanceSchema,
     // );
   }
+
+
 
   async createTrades(dataList: CreateTradeDTO[], user: any) {
     try {
@@ -95,8 +99,13 @@ export class TradeService {
       );
       const lastTrade = sortedTrades[0];
       let opening_balance = data.opening_balance;
-      if (lastTrade) {
-        opening_balance = data.trade_pnl + lastTrade.opening_balance;
+      if (lastTrade && !data.opening_balance) {
+        //Opening balance = prev opening balance +pnl - charges - penalties
+        opening_balance =
+          data.trade_pnl +
+          lastTrade.opening_balance -
+          data.trade_charges -
+          data.trade_penalties;
       }
       const trades = await this.tradeInstance.create({
         asset_class: data.asset_class,
@@ -152,11 +161,46 @@ export class TradeService {
           message: 'No trade found',
         };
       }
-      const dataatAfterUpdate = await this.tradeInstance.update(
+
+      const updatedData = { ...tradeData, ...data };
+      delete updatedData.id;
+      const dataAfterUpdate = await this.tradeInstance.update(
         { id: id },
-        data,
+        updatedData,
       );
+
       return await this.tradeInstance.get(id);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async updateTrades(
+    trades: { id: string; data: UpdateTradeDTO }[],
+    user: any,
+  ) {
+    try {
+      const updatedTrades = [];
+
+      for (const trade of trades) {
+        const tradeData = await this.tradeInstance.get(trade.id);
+
+        if (!tradeData || user.id !== tradeData.user_id) {
+          updatedTrades.push({
+            status: 500,
+            message: `No trade found for trade with ID: ${trade.id}`,
+          });
+          continue;
+        }
+
+        const updatedData = { ...tradeData, ...trade.data };
+        delete updatedData.id;
+
+        await this.tradeInstance.update({ id: trade.id }, updatedData);
+        updatedTrades.push(await this.tradeInstance.get(trade.id));
+      }
+
+      return updatedTrades;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -242,7 +286,9 @@ export class TradeService {
       }
 
       const tradeData = await query.exec();
-      let paginatedTradeData: TradeEntity[] = tradeData;
+      let paginatedTradeData: TradeEntity[] = tradeData.sort((a, b) =>
+        a.trade_date > b.trade_date ? -1 : 1,
+      );
 
       if (filters.page && filters.pageSize) {
         const startIndex = (filters.page - 1) * filters.pageSize;
@@ -254,17 +300,15 @@ export class TradeService {
         paginatedTradeData = tradeData.slice(startIndex, endIndex);
       }
 
-      // const sortedTradeData = this.sortByField(
-      //   paginatedTradeData,
-      //   filters.sortByField,
-      //   filters.sortOrder === 'desc',
-      // );
-
-      // console.log(sortedTradeData);
       const dataToReturn = {
-        totalRecords: tradeData.length, // Use the total records from the unpaginated data
-        data: paginatedTradeData,
+        totalRecords: tradeData.length, 
+        data: paginatedTradeData
       };
+
+      //if paginatedTradeData.length >0 sending last added trade opening_balance also
+      if (paginatedTradeData.length > 0) {
+        dataToReturn['lastAddedTradeOpeningBalance'] = paginatedTradeData[0].opening_balance;
+      }
 
       return dataToReturn;
     } catch (error) {

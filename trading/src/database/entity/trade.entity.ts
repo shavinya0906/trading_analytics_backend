@@ -31,4 +31,12 @@ export class TradeEntity extends Item {
   user_id: string;
   comment: string;
   dynamicColumn: any[];
+  emotion_influence: string;
+  follow_plan: string;
+  confidence_on_decisions: string;
+  experience_regret: string;
+  take_unnecessary_risks: string;
+  feel_anxious_or_stressed: string;
+  attached_or_averse_to_stocks: string;
+  ideas_for_future_improvements: string;
 }

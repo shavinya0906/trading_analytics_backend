@@ -17,10 +17,6 @@ import { CurrentUser } from '../core/decorator/user.decorator';
 import { CreateTradeDTO, UpdateTradeDTO } from 'src/core/dto';
 import { GetByIdDTO } from 'src/core/dto/get-by-id.dto';
 import { MissedTradeService } from './missedTradeLog.service';
-// import {
-//   CreateTradeAdvanceDTO,
-//   UpdateTradeAdvanceDTO,
-// } from 'src/core/dto/trade-advance.dto';
 
 @ApiTags('trade')
 @Controller('trade')
@@ -29,7 +25,6 @@ export class TradeController {
     private readonly tradeService: TradeService,
     private readonly missedTradeService: MissedTradeService,
   ) {}
-  // constructor(private readonly missedTradeService:MissedTradeService){}
 
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
@@ -70,6 +65,20 @@ export class TradeController {
 
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
+  @Put('/update')
+  async updateTrades(
+    @Body() trades: { id: string; data: UpdateTradeDTO }[],
+    @CurrentUser() user: any,
+    @Query('filename') filename?: string,
+  ): Promise<any> {
+    if (filename == 'tools')
+      return await this.missedTradeService.updateTrades(trades, user);
+    else
+    return await this.tradeService.updateTrades(trades, user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(ClientAuthGuard)
   @Delete('/:id')
   async deleteTrade(
     @Param() id: GetByIdDTO,
@@ -87,9 +96,8 @@ export class TradeController {
   async getAllTrade(
     @CurrentUser() user: any,
     @Query() queries: any,
-    // @Query('filename') filename?: string,
   ): Promise<any> {
-    if (queries.filename&&queries.filename == 'tools')
+    if (queries.filename && queries.filename == 'tools')
       return await this.missedTradeService.getMissedTrade(user, queries);
     else {
       return await this.tradeService.getTrade(user, queries);
@@ -100,10 +108,10 @@ export class TradeController {
   @UseGuards(ClientAuthGuard)
   @Get('/trade/:id')
   async getTradeById(
-    @Param() id: GetByIdDTO,
+    @Param() id: string,
     @CurrentUser() user: any,
   ): Promise<any> {
-    return await this.tradeService.getTradeById(id.id, user);
+    return await this.tradeService.getTradeById(id, user);
   }
 
   @ApiBearerAuth()
@@ -132,14 +140,12 @@ export class TradeController {
   @UseGuards(ClientAuthGuard)
   @Get('/get-advanced-graph')
   async getAdvancedGraph(
-    @CurrentUser() user:any,
+    @CurrentUser() user: any,
     @Query('xAxis') xAxis: string,
-    @Query('yAxis') yAxis:string,
-  ):Promise<any>{
-    console.log(xAxis,yAxis);
-    return await this.tradeService.getAdvancedGraph(user,xAxis,yAxis);
+    @Query('yAxis') yAxis: string,
+  ): Promise<any> {
+    return await this.tradeService.getAdvancedGraph(user, xAxis, yAxis);
   }
-
 
   // @ApiBearerAuth()
   // @UseGuards(ClientAuthGuard)

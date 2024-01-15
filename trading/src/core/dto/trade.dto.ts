@@ -155,6 +155,30 @@ export class CreateTradeDTO {
   })
   @IsArray()
   dynamicColumn: any[];
+
+  @IsString()
+  emotion_influence: string;
+
+  @IsString()
+  follow_plan: string;
+
+  @IsString()
+  confidence_on_decisions: string;
+
+  @IsString()
+  experience_regret: string;
+
+  @IsString()
+  take_unnecessary_risks: string;
+
+  @IsString()
+  feel_anxious_or_stressed: string;
+
+  @IsString()
+  attached_or_averse_to_stocks: string;
+
+  @IsString()
+  ideas_for_future_improvements: string;
 }
 
 export class UpdateTradeDTO {
@@ -253,7 +277,7 @@ export class UpdateTradeDTO {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsNumber()
   trade_target: number;
 
   @ApiProperty({
@@ -352,4 +376,36 @@ export class UpdateTradeDTO {
   })
   @IsArray()
   dynamicColumn: any[];  
+
+  @IsOptional()
+  @IsString()
+  emotion_influence: string;
+
+  @IsOptional()
+  @IsString()
+  follow_plan: string;
+
+  @IsOptional()
+  @IsString()
+  confidence_on_decisions: string;
+
+  @IsOptional()
+  @IsString()
+  experience_regret: string;
+
+  @IsOptional()
+  @IsString()
+  take_unnecessary_risks: string;
+
+  @IsOptional()
+  @IsString()
+  feel_anxious_or_stressed: string;
+
+  @IsOptional()
+  @IsString()
+  attached_or_averse_to_stocks: string;
+
+  @IsOptional()
+  @IsString()
+  ideas_for_future_improvements: string;
 }

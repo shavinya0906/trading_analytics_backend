@@ -38,7 +38,9 @@ export class UserColumnService {
         await tradeData.save();
       }
       return {
-        message: 'Column Name Added Successfully',
+        id:column_id,
+        user_id:user.id,
+        column_name: data?.column_name,
       };
     } catch (error) {
       throw new InternalServerErrorException({
