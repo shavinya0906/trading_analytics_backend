@@ -7,10 +7,4 @@ export class CreateTradeAccountDTO {
   })
   @IsString()
   trading_account: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsString()
-  user_id: string;
 }

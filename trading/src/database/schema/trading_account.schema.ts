@@ -2,7 +2,7 @@ import * as dynamoose from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';
 
 export const TradeAccountSchema = new dynamoose.Schema({
-  account_Id: {
+  id: {
     type: String,
     hashKey: true,
     default: uuidv4,

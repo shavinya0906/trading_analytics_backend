@@ -33,8 +33,10 @@ export class StrategiesController {
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
   @Get('/')
-  async getAllaccount(): Promise<any> {
-    return await this.strategieService.getStrategies();
+  async getAllaccount(
+    @CurrentUser() user: any,
+  ): Promise<any> {
+    return await this.strategieService.getStrategies(user);
   }
 
   @ApiBearerAuth()

@@ -33,8 +33,8 @@ export class TradingAccountController {
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
   @Get('/')
-  async getAllaccount(): Promise<any> {
-    return await this.accountService.getTradeAccount();
+  async getAllaccount(@CurrentUser() user:any): Promise<any> {
+    return await this.accountService.getTradeAccount(user);
   }
 
   @ApiBearerAuth()

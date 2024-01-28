@@ -25,9 +25,9 @@ export class TradingAccountService {
     }
   }
 
-  async getTradeAccount() {
+  async getTradeAccount(user:any) {
     try {
-      return await this.tradingAccountInstance.scan().exec();
+      return await this.tradingAccountInstance.scan().where('user_id').eq(user.id).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

@@ -29,7 +29,6 @@ export class TradeController {
     @CurrentUser() user: any,
     @UploadedFile() file: Express.Multer.File, // Add this parameter for the uploaded file
   ): Promise<any> {
-    console.log(user);
     // Check if a file is uploaded
     if (file) {
       // Pass the file to the service for processing

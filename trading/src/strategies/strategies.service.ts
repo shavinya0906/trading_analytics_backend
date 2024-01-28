@@ -26,9 +26,9 @@ export class StrategiesService {
     }
   }
 
-  async getStrategies() {
+  async getStrategies(user:any) {
     try {
-      return await this.strategiesInstance.scan().exec();
+      return await this.strategiesInstance.scan().where('user_id').eq(user.id).exec();
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
