@@ -44,7 +44,7 @@ export class StrategiesService {
         };
       }
       const dataatAfterUpdate = await this.strategiesInstance.update(
-        { strategies_Id: id },
+        { id: id },
         data,
       );
       return await this.strategiesInstance.get(id);

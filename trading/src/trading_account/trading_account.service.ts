@@ -17,7 +17,7 @@ export class TradingAccountService {
   async createTradeAccount(data: CreateTradeAccountDTO, user: any) {
     try {
       return await this.tradingAccountInstance.create({
-        trading_account: data.trading_account,
+        ...data,
         user_id: user.id,
       });
     } catch (error) {
@@ -61,7 +61,7 @@ export class TradingAccountService {
           message: 'No order found',
         };
       }
-      await this.tradingAccountInstance.delete(accountData.account_Id);
+      await this.tradingAccountInstance.delete(accountData.id);
       return {
         status: 200,
         message: 'order is deleted',

@@ -14,5 +14,20 @@ export const TradeAccountSchema = new dynamoose.Schema({
   user_id: {
     type: String,
     required: true,
+  },
+  account_client_id: {
+    type: String,
+  },
+  account_email: {
+    type: String,
+  },
+  account_mobile: {
+    type: String,
+  },
+  account_name: {
+    type: String,
+  },
+  purpose: {
+    type: String,
   }
 });
