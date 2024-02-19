@@ -57,4 +57,36 @@ export class UserColumnService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  //delete column?
+  async deleteColumn(column_id: string, user: any) {
+    try {
+      const columnData = await this.columnInstance.get(column_id);
+      if (columnData.user_id === user.id) {
+        const tradeLogData = await this.tradeInstance
+          .scan('user_id')
+          .eq(user.id)
+          .exec();
+        for (let index = 0; index < tradeLogData.length; index++) {
+          const tradeData = await this.tradeInstance.get(tradeLogData[index].id);
+          const existingDynamicColumn = tradeData.dynamicColumn || [];
+          const newDynamicColumn = existingDynamicColumn.filter(
+            (item) => item.key !== column_id,
+          );
+          tradeData.dynamicColumn = newDynamicColumn;
+          await tradeData.save();
+        }
+        await this.columnInstance.delete(column_id);
+        return {
+          message: 'Column deleted successfully',
+        };
+      } else {
+        return {
+          message: 'Column not found',
+        };
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 }

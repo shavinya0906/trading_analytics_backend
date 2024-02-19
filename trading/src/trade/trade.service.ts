@@ -289,16 +289,15 @@ export class TradeService {
       let paginatedTradeData: TradeEntity[] = tradeData.sort((a, b) =>
         a.trade_date > b.trade_date ? -1 : 1,
       );
-
-      if (filters.page && filters.pageSize) {
-        const startIndex = (filters.page - 1) * filters.pageSize;
+      const pageNumberr=filters.page||1;
+      const pageSize=filters.pageSize||10;
+        const startIndex = (pageNumberr - 1) * pageSize;
         const endIndex = Math.min(
-          filters.page * filters.pageSize,
+          pageNumberr * pageSize,
           tradeData.length,
         );
 
         paginatedTradeData = tradeData.slice(startIndex, endIndex);
-      }
 
       const dataToReturn = {
         totalRecords: tradeData.length, 

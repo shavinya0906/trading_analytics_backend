@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ClientAuthGuard } from 'src/core/helper/auth.guard';
 import { UserColumnService } from './user_column.service';
@@ -25,5 +25,12 @@ export class UserColumnController {
   @Get('/')
   async getColumn(@CurrentUser() user: any,): Promise<any> {
     return await this.userColumnService.getColumn(user);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(ClientAuthGuard)
+  @Delete('/:id')
+  async deleteColumn(@Param() id:any, @CurrentUser() user: any): Promise<any> {
+    return await this.userColumnService.deleteColumn(id, user);
   }
 }
