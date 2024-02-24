@@ -9,7 +9,11 @@ export class TradeService {
   private s3: AWS.S3;
 
   constructor() {
-    this.s3 = new AWS.S3();
+    this.s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_AUTH_BACKEND_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_AUTH_BACKEND_SECRET_KEY,
+      region: process.env.AWS_AUTH_BACKEND_REGION
+    });
   }
 
   // Your existing code ...
