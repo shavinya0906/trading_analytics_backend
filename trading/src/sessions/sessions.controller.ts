@@ -40,9 +40,10 @@ export class SessionsController {
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
   @Delete('/:id')
-  async deletesessions(@Param() id: GetByIdDTO): Promise<any> {
-    return await this.sessionService.deletesessions(id.id);
+  async deletesessions(@Param('id') id: string): Promise<any> {
+    return await this.sessionService.deletesessions(id);
   }
+
 
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)

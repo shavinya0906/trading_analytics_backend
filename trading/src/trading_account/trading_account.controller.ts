@@ -40,18 +40,18 @@ export class TradingAccountController {
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
   @Delete('/:id')
-  async deleteTradeAccount(@Param() id: GetByIdDTO): Promise<any> {
-    return await this.accountService.deleteTradeAccount(id.id);
+  async deleteTradeAccount(@Param() id: any): Promise<any> {
+    return await this.accountService.deleteTradeAccount(id);
   }
 
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
   @Put('/update/:id')
   async updateTrade(
-    @Param() id,
+    @Param() id:any,
     @Body() data: any,
     @CurrentUser() user: any,
   ): Promise<any> {
-    return await this.accountService.updateTradeAccount(id.id, data, user);
+    return await this.accountService.updateTradeAccount(id, data, user);
   }
 }

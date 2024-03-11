@@ -35,22 +35,38 @@ export class TradingAccountService {
 
   async updateTradeAccount(id: string, data: any, user: any) {
     try {
+      // Fetch the trade data from the database
       const tradeData = await this.tradingAccountInstance.get(id);
-      if (!tradeData || user.id != tradeData.user_id) {
+  
+      // Check if the trade exists
+      if (!tradeData) {
+        // If the trade does not exist, return a 404 response
         return {
-          status: 500,
-          message: 'No trade found',
+          status: 404,
+          message: 'Trade not found',
         };
       }
-      const dataatAfterUpdate = await this.tradingAccountInstance.update(
-        { account_Id: id },
-        data,
-      );
-      return await this.tradingAccountInstance.get(id);
+  
+      // Check if the authenticated user has permission to update the trade
+      if (user.id !== tradeData.user_id) {
+        // If the user is not authorized, return a 403 response
+        return {
+          status: 403,
+          message: 'Unauthorized to update the trade',
+        };
+      }
+  
+      // Update the trade data
+      const updatedTrade = await this.tradingAccountInstance.update({ id: id }, data);
+  
+      // Return the updated trade data
+      return updatedTrade;
     } catch (error) {
+      // Handle any errors that occur during the update operation
       throw new InternalServerErrorException(error);
     }
   }
+  
 
   async deleteTradeAccount(id: string) {
     try {

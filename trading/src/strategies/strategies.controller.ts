@@ -42,9 +42,10 @@ export class StrategiesController {
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
   @Delete('/:id')
-  async deleteStrategies(@Param() id: GetByIdDTO): Promise<any> {
-    return await this.strategieService.deleteStrategies(id.id);
+  async deleteStrategies(@Param() id:any): Promise<any> {
+    return await this.strategieService.deleteStrategies(id);
   }
+
 
   @ApiBearerAuth()
   @UseGuards(ClientAuthGuard)
